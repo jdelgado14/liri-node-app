@@ -1,5 +1,7 @@
 require("dotenv").config();
 
+var axios = require("axios");
+
 var keys = require("./js/keys");
 
 var Spotify = require("node-spotify-api");
@@ -33,10 +35,11 @@ function concert(artist) {
 
     axios.get(bandUrl).then(function (response) {
         var jsonData = response.data[0]
+        // console.log(jsonData);
         var artistInfo = [
             "Venue name: " + jsonData.venue.name,
             "Location: " + jsonData.venue.city,
-            "Date: " + jsonData.moment(datetime).format("MM-DD-YYYY")
+            "Date: " + moment(jsonData.datetime).format("L")
         ].join("\n\n");
         console.log(artistInfo);
     })
@@ -44,28 +47,33 @@ function concert(artist) {
 
 function song(title) {
     var spotify = new Spotify(keys.spotify);
-
+    
     if (!title) {
         title = "The Sign";
-    } 
-    spotify.search({type: 'track', query: title}, function (err, data){
-        if (err) throw err;
-    },
+    }
+    spotify.search({ type: 'track', query: title }, function (err, data) {
+        var jsonData = data.tracks.items[0];
 
-    console.log("Artist Name: "+ data.tracks.item[0].album.artists[0].name + "\r\n"),
-    console.log("Song Name: "+ data.tracks.item[0].name + "\r\n"),
-    console.log("Song Preview Link: "+ data.tracks.item[0].href + "\r\n"),
-    console.log("Album: "+ data.tracks.item[0].album.name + "\r\n")
-)};
+        if (err) {
+            return console.log('Error: ' + err)
+        }
+        // console.log(jsonData);
+    console.log("Artist Name: " + jsonData.album.artists[0].name + "\r\n"),
+    console.log("Song Name: " + jsonData.name + "\r\n"),
+    console.log("Song Preview Link: " + jsonData.href + "\r\n"),
+    console.log("Album: " + jsonData.album.name + "\r\n")
+})
+};
 
 function omdb(movie) {
+    var movie = userInput;
     if (!movie) {
         movie = "Mr. Nobody";
     }
     var movieUrl = "http://www.omdbapi.com/?t=" + movie + "&y=&plot=short&apikey=266dd74c";
 
     axios.get(movieUrl).then(function (response) {
-        var jsonData = response.data[0]
+        var jsonData = response.data
         var movieInfo = [
             "Title: " + jsonData.Title,
             "Release Year: " + jsonData.Year,
@@ -82,10 +90,11 @@ function omdb(movie) {
 }
 
 function random() {
-    fs.readFile("random.txt", "utf8", function(err, data){
+    fs.readFile("random.txt", "utf8", function (err, data) {
         if (err) {
-            return (err);
+            return console.log(err);
         } else {
+            // console.log(data)
             var randomData = data.split(",");
             userCommand(randomData[0], randomData[1]);
         }
