@@ -1,6 +1,6 @@
 # liri-node-app
 # About liri
-LIRI is like SIRI (from iOS). It is a command line node app that takes in parameters and outputs data. The user guess four commands.
+LIRI is like SIRI (from iOS). It is a command line node app that takes in parameters and outputs data. The user has four commands.
   * concert-this
   * spotify-this-song
   * movie-this
